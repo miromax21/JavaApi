@@ -33,20 +33,23 @@ public class ArticleController {
     }
 
     @PostMapping("article")
-    public ResponseEntity<Article> createArticle(@RequestBody Article article, UriComponentsBuilder builder) {
+    public ResponseEntity<Article> createArticle(@RequestBody Article article) {
         Article newArticle = articleService.createArticle(article);
-        if(newArticle.getArticleId() <0){
-            ResponseEntity rval = null;
-            switch (newArticle.getArticleId()) {
-                case DAO_ALREADY_REPORTED:  rval = new ResponseEntity<>(HttpStatus.ALREADY_REPORTED); break;
-//                case DAO_ALREADY_REPORTED:  rval = new ResponseEntity<Article>(article, HttpStatus.ALREADY_REPORTED); break;
+        ResponseEntity rval = null;
+        int newArticleID = newArticle.getArticleId();
+        if(newArticleID <0){
+            article.setArticleId( -1 * newArticleID);
+            switch (newArticleID) {
+                case DAO_ALREADY_REPORTED:  rval =  ResponseEntity.status(HttpStatus.FORBIDDEN).body(article); break;
                 case DAO_CONNECT_ERROR:     rval =  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); break;
             }
-            return rval;
         }
-        return new ResponseEntity<Article>(newArticle, HttpStatus.OK);
+        else {
+            rval =  new ResponseEntity<Article>(newArticle, HttpStatus.OK);
+        }
+        return rval;
     }
-    @PostMapping("updateArticles")
+    @PutMapping("updateArticles")
     public ResponseEntity<List<Article>> updateArticles(@RequestBody List<Article> articles){
         articleService.updateArticles(articles);
         return new ResponseEntity<List<Article>>(articles, HttpStatus.OK);
@@ -54,8 +57,13 @@ public class ArticleController {
 
     @PutMapping("article")
     public ResponseEntity<Article> updateArticle(@RequestBody Article article){
-        articleService.updateArticle(article);
-        return new ResponseEntity<Article>(article, HttpStatus.OK);
+       Boolean Updated = articleService.updateArticle(article);
+       if (Updated){
+           return new ResponseEntity<Article>(article, HttpStatus.OK);
+       }
+       else {
+           return  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+       }
     }
 
     @DeleteMapping("article")

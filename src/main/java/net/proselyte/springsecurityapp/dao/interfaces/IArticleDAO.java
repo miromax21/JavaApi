@@ -11,5 +11,5 @@ public interface IArticleDAO {
     void updateArticle(Article article) throws Exception;
     void updateArticles(List<Article> article) throws Exception;
     void deleteArticle(int articleId) throws Exception;
-    boolean articleExists(String title, String category) throws SQLException;
+    int articleIdExists(String title, String category) throws SQLException;
 }

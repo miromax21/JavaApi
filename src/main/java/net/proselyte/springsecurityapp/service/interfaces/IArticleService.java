@@ -8,7 +8,7 @@ public interface IArticleService {
     List<Article> getAllArticles();
     Article getArticleById(int articleId);
     Article createArticle(Article article) throws Exception;
-    void updateArticle(Article article);
+    boolean updateArticle(Article article);
     void updateArticles(List<Article> article);
     void deleteArticle(int articleId);
 }

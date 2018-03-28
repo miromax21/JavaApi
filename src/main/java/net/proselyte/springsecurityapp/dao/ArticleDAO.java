@@ -57,10 +57,11 @@ public class ArticleDAO implements IArticleDAO {
     }
 
     @Override
-    public boolean articleExists(String title, String category) throws SQLException {
+    public int articleIdExists(String title, String category) throws SQLException {
         String hql = "FROM Article as atcl WHERE atcl.title = ? and atcl.category = ?";
-        int count = entityManager.createQuery(hql.toString()).setParameter(1, title)
-                .setParameter(2, category).getResultList().size();
-        return count > 0 ? true : false;
+        List<Article>  articlesList = entityManager.createQuery(hql.toString()).setParameter(1, title)
+                .setParameter(2, category).getResultList();
+        int articleID = articlesList.size() == 1 ? articlesList.get(0).getArticleId() : 0;
+        return articleID;
     }
 }

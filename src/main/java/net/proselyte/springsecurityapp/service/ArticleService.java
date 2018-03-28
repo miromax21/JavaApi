@@ -3,11 +3,9 @@ package net.proselyte.springsecurityapp.service;
 import net.proselyte.springsecurityapp.dao.interfaces.IArticleDAO;
 import net.proselyte.springsecurityapp.model.Article;
 import net.proselyte.springsecurityapp.service.interfaces.IArticleService;
-import org.hibernate.criterion.NullExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -46,8 +44,9 @@ public class ArticleService implements IArticleService {
     public synchronized Article createArticle(Article article){
         Article new_article = new Article();
         try{
-            if(articleDAO.articleExists(article.getTitle(),article.getCategory())){
-                article.setArticleId(DAO_ALREADY_REPORTED);
+            int getArticleID =  articleDAO.articleIdExists(article.getTitle(),article.getCategory());
+            if(getArticleID != 0){
+                article.setArticleId( -1 * getArticleID);
                 return new_article = article;
             }
             new_article = articleDAO.createArticle(article);
@@ -62,14 +61,18 @@ public class ArticleService implements IArticleService {
         }
     }
     @Override
-    public void updateArticle(Article article) {
+    public boolean updateArticle(Article article) {
+        Boolean rval = false;
         try {
-            if(!articleDAO.articleExists(article.getTitle(),article.getCategory())){
+            rval = articleDAO.articleIdExists(article.getTitle(),article.getCategory())!= 0 ? true : false;
+            if(rval){
                articleDAO.updateArticle(article);
             }
+            return rval;
         } catch (Exception e) {
-            logger.debug("updateArticle error: {}", e);
             e.printStackTrace();
+            logger.debug("updateArticle error: {}", e);
+            return  false;
         }
     }
 
