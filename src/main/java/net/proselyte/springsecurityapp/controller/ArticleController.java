@@ -12,8 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static net.proselyte.springsecurityapp.enums.Enums.*;
 import java.util.List;
 @Controller
-@RequestMapping("/article")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@RequestMapping("/api/article")
+//@CrossOrigin(origins = {"http://localhost:1337"})
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
